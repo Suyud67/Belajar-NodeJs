@@ -13,6 +13,7 @@ app.use(express.static('public'));
 // membuat json parse
 const jsonParse = bodyParser.json();
 
+// digunakan ke salah satu middleware saja
 const urlencodedParser = bodyParser.urlencoded({ extended: false });
 
 app.get('/', (req, res) => {
