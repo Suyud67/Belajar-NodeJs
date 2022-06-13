@@ -1,0 +1,20 @@
+[
+  {
+    "nama": "Intan Nurmalisa",
+    "umur": "19",
+    "hobi": "Memanah",
+    "asalSekolah": "SMK Negeri 2 Payangan",
+    "noHp": "081245353453",
+    "email": "IntanLem@gmail.com",
+    "alasanLes": "Ingin belajar pemrograman"
+  },
+  {
+    "nama": "Yayan Ruhiyan",
+    "umur": "17",
+    "hobi": "Berenang",
+    "asalSekolah": "SMK Negeri 2 Sukawati",
+    "noHp": "08573231332",
+    "email": "yayanGaming@gmail.com",
+    "alasanLes": "ingin belajar bahasa inggris"
+  }
+]

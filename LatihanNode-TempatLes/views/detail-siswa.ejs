@@ -1,0 +1,14 @@
+<div class="card m-3" style="width: 20rem">
+  <div class="card-body">
+    <h5 class="card-title"><%= student.nama %></h5>
+    <h6 class="card-subtitle mb-2 text-muted">Umur: <%= student.umur %></h6>
+    <h6 class="card-subtitle mb-2 text-muted">Hobi: <%= student.hobi %></h6>
+    <h6 class="card-subtitle mb-2 text-muted">Asal Sekolah: <%= student.asalSekolah %></h6>
+    <h6 class="card-subtitle mb-2 text-muted">Nomer Hp: <%= student.noHp %></h6>
+    <h6 class="card-subtitle mb-2 text-muted">Email: <%= student.email %></h6>
+    <p class="card-text">Alasan Mengikuti Les di Lemon: <%= student.alasanLes %></p>
+    <a href="/siswa" class="card-link">Kembali</a>
+    <a href="/siswa/edit/<%= student.nama %>" class="btn btn-warning mx-3">Edit</a>
+    <a href="/siswa/delete/<%= student.nama %>" class="btn btn-danger">Hapus</a>
+  </div>
+</div>

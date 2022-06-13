@@ -4,17 +4,16 @@ const { body, validationResult, check } = require('express-validator');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const flash = require('connect-flash');
-const { send } = require('express/lib/response');
-const { storeData, tambahSiswa, cekDuplikat, findSiswa, deleteSiswa, updateStudents } = require('./utils/contacts');
+
+// import dari folder utils
+const { storeData, findStudent, cekDuplikat, tambahSiswa, deleteStudent, updateDataSiswa } = require('../utils/data-siswa');
+
 const app = express();
 const port = 3000;
 
 // menggunakan ejs
 app.set('view engine', 'ejs');
 app.use(expressLayouts);
-
-//build-in middleware
-app.use(express.static('public'));
 
 // build-in middleware untuk parse data yang dikirim
 // digunakan ke setiap middleware
@@ -32,39 +31,72 @@ app.use(
 );
 app.use(flash());
 
-// halaman index atau utama
+// halaman utama
 app.get('/', (req, res) => {
   res.render('index', {
-    layout: 'layouts/mainLayout',
-    title: 'Halaman Utama',
+    layout: 'layouts/main-layout',
+    title: 'Homepage',
+  });
+});
+
+// halaman about
+app.get('/about', (req, res) => {
+  res.render('about', {
+    layout: 'layouts/main-layout',
+    title: 'About Lemon',
+  });
+});
+
+// halaman harga les
+app.get('/harga', (req, res) => {
+  res.render('harga', {
+    layout: 'layouts/main-layout',
+    title: 'Price in Lemon',
   });
 });
 
 // halaman data siswa
 app.get('/siswa', (req, res) => {
-  const banyakSiswa = storeData();
-  res.render('data-siswa', {
-    layout: 'layouts/mainLayout',
-    title: 'Halaman Data Siswa',
-    banyakSiswa,
-    // menerima pesan msg yang dikirim dari middleware post
+  const students = storeData();
+  res.render('layouts/siswa', {
+    layout: 'layouts/main-layout',
+    title: 'Teman Kelas',
+    students,
     msg: req.flash('msg'),
   });
+});
+
+// halaman details data siswa
+app.get('/siswa/detail/:nama', (req, res) => {
+  // function untuk mengambil data 1 siswa
+  const student = findStudent(req.params.nama);
+
+  if (!student) {
+    res.status(404);
+    res.send(`Maaf, siswa atas nama ${req.params.nama} tidak ada!`);
+  } else {
+    // data yang didapat akan dikirim ke halaman detail-siswa
+    res.render('detail-siswa', {
+      layout: 'layouts/main-layout',
+      title: 'Detail Siswa',
+      student,
+    });
+  }
 });
 
 // halaman tambah siswa
 app.get('/siswa/add', (req, res) => {
   res.render('add-siswa', {
-    title: 'Form Tambah Siswa',
-    layout: 'layouts/mainLayout',
+    layout: 'layouts/main-layout',
+    title: 'Halaman Daftar Siswa',
   });
 });
 
-// memproses data form
-// validasi menggunakan express-validator
+// memproses data form add-siswa.ejs
 app.post(
-  '/siswa',
+  '/siswa/add',
   [
+    // validasi nama, email, nomer hp
     body('nama').custom((value) => {
       const duplikat = cekDuplikat(value);
       if (duplikat) {
@@ -73,6 +105,7 @@ app.post(
       return true;
     }),
     check('email', 'Email Tidak Valid!').isEmail(),
+    check('noHp', 'Nomer Anda Tidak Diketahui!').isMobilePhone('id-ID'),
   ],
   (req, res) => {
     // jika terjadi error saat validasi akan disimpan ke var errors
@@ -80,7 +113,7 @@ app.post(
     if (!errors.isEmpty()) {
       res.render('add-siswa', {
         title: 'Form Tambah Siswa',
-        layout: 'layouts/mainLayout',
+        layout: 'layouts/main-layout',
         errors: errors.array(),
       });
     } else {
@@ -92,84 +125,66 @@ app.post(
   }
 );
 
-// menghapus data
+// delete siswa menggunakan rest API (get, post, delete, put)
 app.get('/siswa/delete/:nama', (req, res) => {
-  // mencari nama siswa dari parameter url
-  // nama siswa dikirim ke function findSiswa
-  const siswa = findSiswa(req.params.nama);
+  const siswa = findStudent(req.params.nama);
 
-  // jika nama siswa tidak ada pada file data/siswa.json
   if (!siswa) {
     res.status(404);
-    res.send(`<h1>${req.params.nama} tidak ditemukan!</h1>`);
+    res.send(`<h1>Maaf Nama Siswa ${req.params.nama} Tidak Ditemukan</h1>`);
   } else {
-    deleteSiswa(siswa);
+    deleteStudent(siswa);
     // mengirim pesan flash
     req.flash('msg', 'Data Berhasil Dihapus!');
     res.redirect('/siswa');
   }
 });
 
-// halaman edit siswa
+// update data siswa (UI)
 app.get('/siswa/edit/:nama', (req, res) => {
-  const siswa = findSiswa(req.params.nama);
+  const dataSiswa = findStudent(req.params.nama);
 
   res.render('edit-siswa', {
-    title: 'Form Tambah Siswa',
-    layout: 'layouts/mainLayout',
-    siswa, // mengirim data param ke halaman edit-siswa.ejs
+    layout: 'layouts/main-layout',
+    title: 'Form Edit Siswa',
+    dataSiswa,
   });
 });
 
-// path untuk mengolah data edit siswa
+// memproses data dari form edit-siswa.ejs
 app.post(
   '/siswa/update',
   [
+    // validasi nama, email, nomer hp
     body('nama').custom((value, { req }) => {
       const duplikat = cekDuplikat(value);
-
-      // mengecek jika nama baru tidak sama dengan nama lama
-      // akan tetapi duplikat kirim pesan error
-      if (value !== req.body.oldName && duplikat) {
+      if (value !== req.body.namaLama && duplikat) {
         throw new Error('Nama siswa sudah digunakan!');
       }
       return true;
     }),
     check('email', 'Email Tidak Valid!').isEmail(),
+    check('noHp', 'Nomer Anda Tidak Diketahui!').isMobilePhone('id-ID'),
   ],
   (req, res) => {
     // jika terjadi error saat validasi akan disimpan ke var errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       res.render('edit-siswa', {
-        title: 'Form Update Data Siswa',
-        layout: 'layouts/mainLayout',
+        title: 'Form Edit Data Siswa',
+        layout: 'layouts/main-layout',
         errors: errors.array(),
-        siswa: req.body,
+        dataSiswa: req.body,
       });
     } else {
-      updateStudents(req.body);
-      // mengirim pesan flash
-      req.flash('msg', 'Data Berhasil Diubah!');
+      updateDataSiswa(req.body);
+      // // mengirim pesan flash
+      req.flash('msg', 'Data Berhasil Disimpan!');
       res.redirect('/siswa');
     }
   }
 );
 
-// halaman about
-app.get('/about', (req, res) => {
-  res.render('about', {
-    layout: 'layouts/mainLayout',
-    title: 'Halaman About',
-  });
-});
-
-// middleware ketika halaman tidak ditemukan
-app.use('/', (req, res) => {
-  res.status(404);
-  res.send('<h1>Page Not Found!</h1>');
-});
-
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}, http://localhost:${port}`);
+  console.log(`Server berjalan di port: ${port}, http://localhost:${port}`);
 });
