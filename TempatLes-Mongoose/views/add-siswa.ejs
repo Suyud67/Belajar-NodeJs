@@ -1,0 +1,52 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="header-form">
+        <h2>Form Tambah Siswa Lemon</h2>
+      </div>
+      <!-- warning ketika ada data yang sama -->
+      <% if (typeof errors != 'undefined') { %>
+      <div class="alert alert-danger" role="alert">
+        <ul>
+          <% errors.forEach(error => { %>
+          <li><%= error.msg %></li>
+          <% }) %>
+        </ul>
+      </div>
+      <% } %>
+
+      <form method="post" action="/siswa/add">
+        <div class="mb-3">
+          <label for="nama" class="form-label">Nama: </label>
+          <input type="text" class="form-control" id="nama" required name="nama" placeholder="Masukkan nama anda..." />
+        </div>
+        <div class="mb-3">
+          <label for="umur" class="form-label">Umur: </label>
+          <input type="text" class="form-control" id="umur" required name="umur" placeholder="17 ?" />
+        </div>
+        <div class="mb-3">
+          <label for="hobi" class="form-label">hobi: </label>
+          <input type="text" class="form-control" id="hobi" required name="hobi" placeholder="Membaca ?" />
+        </div>
+        <div class="mb-3">
+          <label for="sekolah" class="form-label">Asal Sekolah: </label>
+          <input type="text" class="form-control" id="sekolah" required name="sekolah" placeholder="SMA/SMK ?" />
+        </div>
+        <div class="mb-3">
+          <label for="noHp" class="form-label">Nomer Hp: </label>
+          <input type="number" class="form-control" id="noHp" required name="noHp" placeholder="08..." />
+        </div>
+        <div class="mb-3">
+          <label for="email" class="form-label">Email: </label>
+          <input type="email" class="form-control" id="email" required name="email" placeholder="email@..." />
+        </div>
+        <div class="mb-3">
+          <label for="alasanLes" class="form-label">Alasan Les Di Lemon: </label>
+          <textarea name="alasanLes" id="alasanLes" cols="30" rows="5" class="form-control" placeholder="Ingin menguasai bahasa inggris dengan fasih"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
+  </div>
+</div>

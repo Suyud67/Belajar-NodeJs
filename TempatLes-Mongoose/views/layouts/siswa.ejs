@@ -1,0 +1,42 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="header-siswa">
+        <h1>Teman Teman Kelas Mu</h1>
+      </div>
+
+      <!-- alert data siswa berhasil ditambah -->
+      <% if (msg.length !== 0) { %>
+      <div class="alert alert-success" role="alert"><%= msg %></div>
+      <% } %>
+
+      <!-- btn tambah data siswa -->
+      <a href="/siswa/add" class="btn btn-primary mb-2">Daftar Siswa</a>
+
+      <table class="table table-dark table-striped">
+        <thead>
+          <tr>
+            <th scope="col">No</th>
+            <th scope="col">Nama</th>
+            <th scope="col">Umur</th>
+            <th scope="col">Asal Sekolah</th>
+            <th scope="col">Alasan Ikut Les Lemon</th>
+            <th scope="col">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% students.forEach((student,i) => { i++%>
+          <tr>
+            <td><%= i++ %></td>
+            <td><%= student.nama %></td>
+            <td><%= student.umur %></td>
+            <td><%= student.sekolah %></td>
+            <td><%= student.alasanLes %></td>
+            <td><a href="/siswa/detail/<%= student.nama %>" class="btn btn-success">Details</a></td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
