@@ -10,7 +10,7 @@ const routes = require('../routes/routes');
 const app = express();
 const port = 3000;
 
-// konfigurasi ejs
+// menggunakan ejs
 app.set('view engine', 'ejs');
 app.set('layout', 'layouts/main-layout');
 app.use(expressLayouts);
